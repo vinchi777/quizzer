@@ -1,25 +1,37 @@
-var http = require('http');
-var Sandbox = require('./lib/sandbox');
+var Sandbox = require('./lib/sandbox'),
+	join = require('path').join,
+	config = require('./config');
 
-http.createServer(function (req, res) {
+var express = require('express'),
+	app = express(),
+	server = require('http').createServer(app);
 
-	var sandbox = new Sandbox();
+var db = require('./lib/mongo_connection');
+var auth = require('./routes/authentication');
+var sockets = require('./lib/socket_server');
 
-	var snippet = '';
+app.configure(function (){
+	app.set('view engine', 'ejs');
+	app.set('views', join(__dirname, 'views'));
+	app.use(express.logger('dev'));
+	app.use(express.bodyParser());
+	app.use(express.methodOverride());
+  	app.use(express.cookieParser('seecreet'));
+  	app.use(express.session());
+	auth.setup(app);
+	sockets.setup(server);
+	app.use(app.router);
+	app.use(express.static(join(__dirname, 'public')));
+});
 
-	req.setEncoding('utf8');
-	req.on('data', function(chunk) {
-		snippet += chunk;
-	});
+app.get('/', auth.ensureAuthenticated, function (req, res) {
+	res.render('index');
+});
 
-	req.on('end', function () {
-		sandbox.run({ code: testConnection(snippet) }, function (output) {
-			console.log(output);
-			res.end();
-		});
-	});
-
-}).listen(9000);
+server.listen(config.app_port, config.app_host, function () {
+	var addr = server.address();
+	console.log('Quizzer listening on http://' + addr.address + ':' + addr.port);
+});
 
 function testConnection(snippet) {
 	var code = "".concat(
