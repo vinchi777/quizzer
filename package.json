@@ -1,7 +1,7 @@
 {
-  "name": "test_mongo",
+  "name": "quizzer",
   "version": "0.0.0",
-  "description": "MongoDB questionaire app",
+  "description": "Quizzer application",
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
