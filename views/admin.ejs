@@ -65,6 +65,7 @@
               <option>4</option>
             </select>
             <button id="get_question" data-current="0">Get Question</button>
+            <button id="show_results">Check Answers</button>
             <button>Raise Fingers</button>
           </div>
           <p id="question"></p>
@@ -90,7 +91,7 @@
 
       $('#get_question').click(function (evt) {
         var num = $('#question_num :selected').text();
-        socket.emit('getQuestion', num, function (data) {
+        socket.emit('newQuestion', num, function (data) {
           $('#question').text(data);
         });
       });
@@ -99,6 +100,10 @@
         socket.emit('startQuiz', function (num) {
           alert('Starting question number ' + num);
         });
+      });
+
+      $('#show_results').click(function (evt) {
+        socket.emit('showResults');
       });
     </script>
 
