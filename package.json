@@ -16,6 +16,9 @@
     "mongoose": "~3.6.18",
     "express": "~3.3.8",
     "socket.io": "~0.9.16",
-    "ejs": "~0.8.4"
+    "ejs": "~0.8.4",
+    "cookie": "~0.1.0",
+    "connect-redis": "~1.4.5",
+    "connect": "~2.8.8"
   }
 }

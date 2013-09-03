@@ -1,0 +1,6 @@
+{ _id: 0,
+  name: 'aimee Zank',
+  scores: 
+   [ { type: 'exam', score: 1.463179736705023 },
+     { type: 'quiz', score: 11.78273309957772 },
+     { type: 'homework', score: 35.8740349954354 } ] }

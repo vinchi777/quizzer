@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="shortcut icon" href="http://getbootstrap.com/assets/ico/favicon.png">
+
+    <title>Quizzer</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="http://getbootstrap.com/dist/css/bootstrap.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="http://getbootstrap.com/examples/starter-template/starter-template.css" rel="stylesheet">
+
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="../../assets/js/html5shiv.js"></script>
+      <script src="../../assets/js/respond.min.js"></script>
+    <![endif]-->
+
+    <style>
+      #snippet {
+        width: 600px;
+        height: 270px;
+      }
+      #results{
+        width: 600px;
+        height: 170px;
+      }
+      .block {
+        margin: 10px 20px;
+        display: inline-block;
+      }
+    </style>
+  </head>
+
+  <body style="">
+
+    <div class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container">
+        <div class="navbar-header">
+          <a class="navbar-brand" href="#">Quizzer</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="container">
+      <div class="row">
+        <div class="col-md-4">
+          <p>Connected: </p>
+          <ul id="connected"></ul>
+        </div>
+        <div class="col-md-8">
+          <div class="block">
+            <button>Start Trial</button>
+            <button id="start_quiz">Start Quiz</button>
+          </div>
+          <div class="block">
+            <select id="question_num">
+              <option>1</option>
+              <option>2</option>
+              <option>3</option>
+              <option>4</option>
+            </select>
+            <button id="get_question" data-current="0">Get Question</button>
+            <button>Raise Fingers</button>
+          </div>
+          <p id="question"></p>
+          <p id="answer"></p>
+        </div>
+      </div>
+    </div><!-- /.container -->
+
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="assets/jquery/jquery-1.9.1.min.js"></script>
+    <script src="assets/bootstrap/js/bootstrap.min.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script type="text/javascript">
+      var socket = io.connect(window.location.origin);
+
+      socket.on('connected', function (data) {
+        var li = "<li>" + data.name + "</li>";
+        $('#connected').append(li);
+      });
+
+      $('#get_question').click(function (evt) {
+        var num = $('#question_num :selected').text();
+        socket.emit('getQuestion', num, function (data) {
+          $('#question').text(data);
+        });
+      });
+
+      $('#start_quiz').click(function (evt) {
+        socket.emit('startQuiz', function (num) {
+          alert('Starting question number ' + num);
+        });
+      });
+    </script>
+
+</body></html>

@@ -4,11 +4,16 @@ var Sandbox = require('./lib/sandbox'),
 
 var express = require('express'),
 	app = express(),
-	server = require('http').createServer(app);
+	server = require('http').createServer(app),
+	RedisStore = require('connect-redis')(express);
 
-var db = require('./lib/mongo_connection');
-var auth = require('./routes/authentication');
-var sockets = require('./lib/socket_server');
+// RedisStore to be used instead of express sessionStore
+var sessionStore = new RedisStore(config.redis);
+
+var db = require('./lib/mongo_connection'),
+	sockets = require('./lib/socket_server'),
+	auth = require('./routes/authentication'),
+	admin = require('./routes/admin');
 
 app.configure(function (){
 	app.set('view engine', 'ejs');
@@ -16,11 +21,15 @@ app.configure(function (){
 	app.use(express.logger('dev'));
 	app.use(express.bodyParser());
 	app.use(express.methodOverride());
-  	app.use(express.cookieParser('seecreet'));
-  	app.use(express.session());
+  	app.use(express.cookieParser());
+  	app.use(express.session({
+  		store : sessionStore,
+  		secret: config.sessionSecret 
+  	}));
 	auth.setup(app);
-	sockets.setup(server);
+	sockets.setup(server, sessionStore);
 	app.use(app.router);
+	admin.setup(app);
 	app.use(express.static(join(__dirname, 'public')));
 });
 

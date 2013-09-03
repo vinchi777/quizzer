@@ -8,7 +8,7 @@ var TraineeSchema = new Schema({
 });
 
 TraineeSchema.statics.getInfo = function (username, password, callback) {
-	return this.findOne({ username: username, password: password }, callback);
+	return this.findOne({ username: username, password: password }, { password: 0 }, callback);
 }
 
 module.exports = mongoose.model('trainees', TraineeSchema);

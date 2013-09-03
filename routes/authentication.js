@@ -14,13 +14,13 @@ passport.use(new LocalStrategy(function (username, password, done) {
 	});
 }));
 
-passport.serializeUser(function (user, done) {
-	done(null, user._id);
+passport.serializeUser(function (trainee, done) {
+	done(null, trainee);
 });
 
-passport.deserializeUser(function (id, done) {
-	Trainee.findById(id, function (err, user){
-		done(err, user);
+passport.deserializeUser(function (trainee, done) {
+	Trainee.findById(trainee._id, function (err, trainee){
+		done(err, trainee);
 	});
 });
 
