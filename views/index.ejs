@@ -114,7 +114,7 @@
     <div class="container">
 
       <div class="starter-template">
-        <h3>- Question -</h3>
+        <h3>- Quizzer -</h3>
         <p class="question" id="question">
           ...
         </p>
@@ -136,6 +136,7 @@
     <script src="/socket.io/socket.io.js"></script>
     <script type="text/javascript">
       var socket = io.connect(window.location.href);
+      socket.emit('connect');
 
       $('#code_submit').on('click', function (evt) {
         var code = $('#snippet').val();
@@ -145,7 +146,7 @@
         });
       });
       socket.on('question', function(q) {
-        $('.question').text(q);
+        $('.question').html(q);
       });
       socket.on('results', function(r) {
         console.log(r);

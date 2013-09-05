@@ -54,19 +54,24 @@
         </div>
         <div class="col-md-8">
           <div class="block">
-            <button>Start Trial</button>
-            <button id="start_quiz">Start Quiz</button>
-          </div>
-          <div class="block">
+            <span>Question No: </span>
             <select id="question_num">
               <option>1</option>
               <option>2</option>
               <option>3</option>
               <option>4</option>
+              <option>5</option>
+              <option>6</option>
+              <option>7</option>
+              <option>8</option>
+              <option>9</option>
+              <option>10</option>
+              <option>11</option>
+              <option>12</option>
             </select>
-            <button id="get_question" data-current="0">Get Question</button>
-            <button id="show_results">Check Answers</button>
-            <button>Raise Fingers</button>
+            <button id="get_question">Show Question</button>
+            <button id="show_results">Show Results</button>
+            <button id="afk">Raise Fingers</button>
           </div>
           <p id="question"></p>
           <p id="answer"></p>
@@ -80,13 +85,65 @@
     <!-- Placed at the end of the document so the pages load faster -->
     <script src="assets/jquery/jquery-1.9.1.min.js"></script>
     <script src="assets/bootstrap/js/bootstrap.min.js"></script>
+    <script src="assets/underscore/underscore-min.js"></script>
+    <script src="assets/backbone/backbone.js"></script>
+    <script src="assets/backbone/backbone.babysitter.js"></script>
     <script src="/socket.io/socket.io.js"></script>
     <script type="text/javascript">
       var socket = io.connect(window.location.origin);
 
+      var Connections = Backbone.View.extend({
+        el: '#connected',
+        initialize: function () {
+          this.container = new Backbone.ChildViewContainer();
+          this.listenTo(this.collection, 'add', this.addConnection);
+          this.listenTo(this.collection, 'remove', this.removeConnection);
+        },
+        addConnection: function (user) {
+          var view = new UserView({model: user});
+          this.container.add(view);
+          this.$el.append(view.render().el);
+        },
+        removeConnection: function (user) {
+          var view = this.container.findByModel(user);
+          view.remove();
+        }
+      });
+
+      var User = Backbone.Model.extend({
+        idAttribute: '_id',
+        initialize: function () {
+          this;
+        }
+      });
+
+      var UserView = Backbone.View.extend({
+        tagName: 'li',
+        template: _.template('<span>{{ name }} </span>', null, {interpolate: /\{\{(.+?)\}\}/g} ),
+        initialize: function () {
+
+        },
+        render: function () {
+          this.$el.html(this.template(this.model.attributes));
+          return this;
+        }
+      });
+
+      var UserCollection = Backbone.Collection.extend({
+        models: User,
+        initialize: function() {
+
+        }
+      });
+
+      var app = new Connections({collection: new UserCollection() });
+
       socket.on('connected', function (data) {
-        var li = "<li>" + data.name + "</li>";
-        $('#connected').append(li);
+        app.collection.add(new User(data));
+      });
+
+      socket.on('disconnected', function (data) {
+        app.collection.remove(new User(data));
       });
 
       $('#get_question').click(function (evt) {
