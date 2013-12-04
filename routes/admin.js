@@ -1,6 +1,7 @@
 exports.isAdmin = function (req, res, next) {
 	if (req.session.passport.user.admin) { return next(); }
 	res.render('404');
+  return next();
 }
 
 exports.admin = function (req, res) {
